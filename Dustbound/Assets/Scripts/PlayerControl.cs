@@ -9,6 +9,13 @@ public class PlayerControl : MonoBehaviour
     private Vector2 movement;
     private float moveSpeed = 4.0f;
 
+    //height
+    private float jump;
+    private float jumpHeight = 3.0f;
+
+    private Vector2 cam;
+    private float rotSpeed = 90.0f;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -17,13 +24,19 @@ public class PlayerControl : MonoBehaviour
         //ctx = context, can be named anything; lambda expression
         control.Gameplay.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
         control.Gameplay.Move.canceled += ctx => movement = Vector2.zero;
+
+        control.Gameplay.Jump.performed += ctx => Jump();
     }
 
     void Update()
     {
-       // Vector2 direction = new Vector2(movement.x, movement.y) * Time.deltaTime * moveSpeed;
         Vector3 direction = new Vector3(movement.x, 0, movement.y) * Time.deltaTime * moveSpeed;
         transform.Translate(direction, Space.World);
+    }
+
+    void Jump()
+    {
+        Debug.Log("Jump");
     }
 
     private void OnEnable()
