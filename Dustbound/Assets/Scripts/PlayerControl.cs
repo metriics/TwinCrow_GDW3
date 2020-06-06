@@ -5,15 +5,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject cam;
+
+    //movements
     private Input control;
     private Vector2 movement;
-    private float moveSpeed = 4.0f;
-
+    private float moveSpeed = 6.0f;
+    
     //height
-    private float jump;
+    public float jump;
     private float jumpHeight = 3.0f;
 
-    private Vector2 cam;
     private float rotSpeed = 90.0f;
 
     // Start is called before the first frame update
@@ -31,7 +34,19 @@ public class PlayerControl : MonoBehaviour
     void Update()
     {
         Vector3 direction = new Vector3(movement.x, 0, movement.y) * Time.deltaTime * moveSpeed;
+        direction = cam.transform.TransformDirection(direction);
+        direction.y = 0.0f;
         transform.Translate(direction, Space.World);
+    
+        if (direction != Vector3.zero)
+        {
+            //immediate rotation
+            transform.rotation = Quaternion.LookRotation(direction);
+            
+            //slow rotation
+            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction),
+            //0.01f);
+        }
     }
 
     void Jump()
