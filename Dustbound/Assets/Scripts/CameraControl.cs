@@ -33,12 +33,14 @@ public class CameraControl : MonoBehaviour
 
     void LateUpdate()
     {
+        //angle to rotate camera
         Quaternion rotAngle = Quaternion.AngleAxis(cam.x * Time.deltaTime * camSpeed, Vector3.up);
         offset = rotAngle * offset;
 
+        //smooth follow
         targetPos = player.transform.position + offset;
         transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref velocity, 0.01f);
-        transform.LookAt(player.transform.position);
+        transform.LookAt(player.transform);
     }
 
 
