@@ -17,9 +17,16 @@ public class PlayerControl : MonoBehaviour
     private float rotSpeed = 90.0f;
     private Vector3 direction;
 
+    //dash 
+    private Vector3 charDirection;
+    private bool isDashing = false;
+
     //jump
-    public bool isGrounded;
-    public Rigidbody body;
+    [SerializeField]
+    private bool isGrounded;
+    [SerializeField]
+    private Rigidbody body;
+
     private Vector3 jumpHeight = new Vector3(0.0f, 8.0f, 0.0f);
     RaycastHit hit;
 
@@ -33,17 +40,16 @@ public class PlayerControl : MonoBehaviour
         control.Gameplay.Move.canceled += ctx => movement = Vector2.zero;
 
         control.Gameplay.Jump.performed += ctx => Jump();
+        control.Gameplay.DodgeRoll.performed += ctx => DodgeRoll();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-
-        Vector3 direction = new Vector3(movement.x, 0, movement.y) * Time.deltaTime * moveSpeed;
+        direction = new Vector3(movement.x, 0.0f, movement.y) * Time.deltaTime * moveSpeed;
         direction = cam.transform.TransformDirection(direction);
         direction.y = 0.0f;
         transform.Translate(direction, Space.World);
 
-        //Debug.Log(direction);
         if (direction != Vector3.zero)
         {
             //immediate rotation
@@ -70,11 +76,25 @@ public class PlayerControl : MonoBehaviour
     {
         GroundCheck();
 
-        if (isGrounded)
+        if (isGrounded && !isDashing) 
         {
             body.AddForce(jumpHeight, ForceMode.Impulse);
         }
     }
+
+    void DodgeRoll()
+    {
+        GroundCheck();
+
+        if (isGrounded && !isDashing)
+        {
+            isDashing = true;
+            Debug.Log("Dash");
+            body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
+            isDashing = false;
+        }
+    }
+
 
     private void OnEnable()
     {
