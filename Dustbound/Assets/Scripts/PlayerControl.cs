@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 public class PlayerControl : MonoBehaviour
 {
@@ -14,12 +16,12 @@ public class PlayerControl : MonoBehaviour
     private Input control;
     private Vector2 movement;
     private float moveSpeed = 6.0f;
-    private float rotSpeed = 90.0f;
     private Vector3 direction;
 
-    //dash 
-    private Vector3 charDirection;
+    //dodge roll
     private bool isDashing = false;
+    private float rollTimer = 0.0f;
+    private float rollCooldown = 1.0f;
 
     //jump
     [SerializeField]
@@ -27,6 +29,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private Rigidbody body;
 
+    private bool isJumping;
     private Vector3 jumpHeight = new Vector3(0.0f, 8.0f, 0.0f);
     RaycastHit hit;
 
@@ -53,12 +56,25 @@ public class PlayerControl : MonoBehaviour
         if (direction != Vector3.zero)
         {
             //immediate rotation
-            transform.rotation = Quaternion.LookRotation(direction);
+            //transform.rotation = Quaternion.LookRotation(direction);
             
             //slow rotation
-            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction),
-            //0.01f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction),
+            0.01f);
         }
+
+        //if (isJumping)
+        //{
+        //    body.AddForce(jumpHeight, ForceMode.Impulse);
+        //    isJumping = false;
+        //}
+        //
+        //if (isDashing)
+        //{
+        //    body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
+        //    rollTimer = Time.time + rollCooldown;
+        //    isDashing = false;
+        //}
     }
 
     void GroundCheck()
@@ -76,9 +92,9 @@ public class PlayerControl : MonoBehaviour
     {
         GroundCheck();
 
-        if (isGrounded && !isDashing) 
+        if (isGrounded && !isDashing && Time.time > rollTimer) 
         {
-            body.AddForce(jumpHeight, ForceMode.Impulse);
+            isJumping = true;
         }
     }
 
@@ -86,12 +102,9 @@ public class PlayerControl : MonoBehaviour
     {
         GroundCheck();
 
-        if (isGrounded && !isDashing)
+        if (isGrounded && !isJumping && !isDashing && Time.time > rollTimer)
         {
             isDashing = true;
-            Debug.Log("Dash");
-            body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
-            isDashing = false;
         }
     }
 
