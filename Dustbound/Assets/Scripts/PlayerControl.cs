@@ -15,7 +15,7 @@ public class PlayerControl : MonoBehaviour
     //movements
     private Input control;
     private Vector2 movement;
-    private float moveSpeed = 6.0f;
+    private float moveSpeed = 5.0f;
     private Vector3 direction;
 
     //dodge roll
@@ -24,13 +24,12 @@ public class PlayerControl : MonoBehaviour
     private float rollCooldown = 1.0f;
 
     //jump
-    [SerializeField]
     private bool isGrounded;
     [SerializeField]
     private Rigidbody body;
 
     private bool isJumping;
-    private Vector3 jumpHeight = new Vector3(0.0f, 8.0f, 0.0f);
+    private float jumpHeight = 7.0f;
     RaycastHit hit;
 
     // Start is called before the first frame update
@@ -46,35 +45,43 @@ public class PlayerControl : MonoBehaviour
         control.Gameplay.DodgeRoll.performed += ctx => DodgeRoll();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        direction = new Vector3(movement.x, 0.0f, movement.y) * Time.deltaTime * moveSpeed;
+        direction = new Vector3(movement.x, 0.0f, movement.y);
         direction = cam.transform.TransformDirection(direction);
         direction.y = 0.0f;
-        transform.Translate(direction, Space.World);
+        transform.position += direction * Time.deltaTime * moveSpeed;
 
         if (direction != Vector3.zero)
         {
             //immediate rotation
-            //transform.rotation = Quaternion.LookRotation(direction);
-            
+            transform.rotation = Quaternion.LookRotation(direction);
+
             //slow rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction),
-            0.01f);
+            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction),
+            //0.01f);
         }
 
-        //if (isJumping)
-        //{
-        //    body.AddForce(jumpHeight, ForceMode.Impulse);
-        //    isJumping = false;
-        //}
-        //
-        //if (isDashing)
-        //{
-        //    body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
-        //    rollTimer = Time.time + rollCooldown;
-        //    isDashing = false;
-        //}
+    }
+
+    void FixedUpdate()
+    {
+
+        body.MovePosition(transform.position + (direction * moveSpeed * Time.fixedDeltaTime));
+
+        if (isJumping)
+        {
+            body.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            isJumping = false;
+        }
+        
+        if (isDashing)
+        {
+            body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
+            rollTimer = Time.fixedTime + rollCooldown;
+            isDashing = false;
+        }
+   
     }
 
     void GroundCheck()

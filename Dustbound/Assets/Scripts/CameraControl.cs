@@ -15,7 +15,7 @@ public class CameraControl : MonoBehaviour
 
     private Vector3 targetPos;
     private Vector3 offset = new Vector3(0.0f, 4.0f, -8.0f);
-    private Vector3 velocity = Vector3.one;
+    private Vector3 velocity = Vector3.zero;
 
     //camera rotate
     private Vector2 cam;
