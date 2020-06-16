@@ -15,7 +15,7 @@ public class PlayerControl : MonoBehaviour
     //movements
     private Input control;
     private Vector2 movement;
-    private float moveSpeed = 5.0f;
+    private float moveSpeed = 7.0f;
     private Vector3 direction;
 
     //dodge roll
@@ -29,7 +29,7 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody body;
 
     private bool isJumping;
-    private float jumpHeight = 7.0f;
+    private float jumpForce = 7.0f;
     RaycastHit hit;
 
     // Start is called before the first frame update
@@ -50,7 +50,6 @@ public class PlayerControl : MonoBehaviour
         direction = new Vector3(movement.x, 0.0f, movement.y);
         direction = cam.transform.TransformDirection(direction);
         direction.y = 0.0f;
-        transform.position += direction * Time.deltaTime * moveSpeed;
 
         if (direction != Vector3.zero)
         {
@@ -71,13 +70,13 @@ public class PlayerControl : MonoBehaviour
 
         if (isJumping)
         {
-            body.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isJumping = false;
         }
         
         if (isDashing)
         {
-            body.AddForce(transform.forward * 7.0f, ForceMode.Impulse);
+            body.AddForce(transform.forward * 8.0f, ForceMode.Impulse);
             rollTimer = Time.fixedTime + rollCooldown;
             isDashing = false;
         }

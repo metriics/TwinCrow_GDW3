@@ -31,7 +31,7 @@ public class CameraControl : MonoBehaviour
         transform.LookAt(player.transform.position);
     }
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         //angle to rotate camera
         Quaternion rotAngle = Quaternion.AngleAxis(cam.x * Time.deltaTime * camSpeed, Vector3.up);
